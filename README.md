@@ -3,7 +3,11 @@
 
 ## Créer et utiliser des environnements virtuels
 
-- Voir la documentation : https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments
+- Voir la documentation :
+
+    - https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments
+
+    - https://fastapi.tiangolo.com/virtual-environments/#activate-the-virtual-environment
 
 - Créer python env : ```python -m venv .venv```
 
