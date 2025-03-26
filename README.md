@@ -15,3 +15,11 @@
     - Windows : ```.venv/Scripts/activate``` ou ```.venv\Scripts\activate```
 
     - Unix/macOS : ```source .venv/bin/activate```
+
+## Configurer le projet
+
+- Voir la documentation : ```https://fastapi.tiangolo.com```
+
+- Installer les dépendances : ```pip install -r requirements.txt```
+
+- Lancer le projet : ```fastapi dev main.py```
