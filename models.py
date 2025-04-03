@@ -1,7 +1,13 @@
 from sqlmodel import Field, Relationship, SQLModel
-from typing import ClassVar
+from typing import Any, ClassVar
 from enum import Enum
 from datetime import datetime
+
+from pydantic import BaseModel
+
+class CustomResponse(BaseModel):
+    message: str
+    additional_data: Any | None = None
 
 class AccountType(str, Enum):
     ADMIN = "ADMIN"

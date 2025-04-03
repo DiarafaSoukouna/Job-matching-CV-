@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 
-from models import Account, Admin, Candidate, Entreprise
+from models import Account, Admin, Candidate, Entreprise, CustomResponse
 
 from typing import Annotated, Any
 
@@ -40,13 +40,15 @@ def get_session():
 SessionDep = Annotated[Session, Depends(get_session)]
 
 @app.post("/account/create")
-def create_account(account: Account, session: SessionDep) -> Any:
-    session.add(account)
-    session.commit()
-    session.refresh(account)
+def create_account(account: Account, session: SessionDep, response: Response) -> CustomResponse:
+    try:
+        session.add(account)
+        session.commit()
 
-    admin: Admin = account
-    return admin
+        return CustomResponse(message="Account created successfully....")
+    except:
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return CustomResponse(message="Error occured....")
 
 
 @app.get("/")
