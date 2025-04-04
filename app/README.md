@@ -22,10 +22,15 @@
 
 - Installer les dépendances : ```pip install -r requirements.txt```
 
-- Lancer le projet : ```fastapi dev main.py```
+- Lancer le projet : ```fastapi dev app/main.py```
 
 - API docs :
 
     - http://127.0.0.1:8000/docs
 
     - http://127.0.0.1:8000/redoc
+
+## Déployer FastAPI sur Docker
+
+- Voir la documentation : ```https://fastapi.tiangolo.com/deployment/docker```
+- Créer l'image : ```docker build -t fastapi-example .```
