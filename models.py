@@ -38,7 +38,7 @@ class AccountBase(SQLModel, table=False):
 
 class Account(AccountBase, table=True):
     __tablename__="account"
-    password: str | None = Field(default=None)
+    password: str | None = Field(default=None, exclude=True)
     cv_file_path: str | None = Field(default=None)
     nif: str | None = Field(default=None)
     rc: str | None = Field(default=None)
