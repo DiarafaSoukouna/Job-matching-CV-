@@ -2,11 +2,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status, Form
 
-from models import Account, Admin, Candidate, Entreprise, CustomResponse
+from models import AccountType, Account, Admin, Candidate, Entreprise, CustomResponse
 
-from typing import Annotated, Any
+from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException
 from sqlmodel import Session, SQLModel, create_engine, or_, select
 
 from helpers.messages import *
@@ -44,20 +44,31 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
+def checkIfAccountExists(username: str, email: str, phone_number: str):
+    """
+        Check if there is a account with this username or this email or this phone number
+        
+        If yes then raise an error else do nothing
+    """
+    pass
+
 @app.post("/account/create")
 def create_account(account: Account, session: SessionDep) -> CustomResponse:
-    try:
-        password = account.password
+    status_code=status.HTTP_403_FORBIDDEN
 
-        if password:
-            account.password = passwordHasher.hash(password)
+    if account.account_type not in [AccountType.ADMIN, AccountType.ENTREPRISE, AccountType.CANDIDATE]:
+        raise HTTPException(status_code=status_code, detail=accountTypeError)
+    
+    checkIfAccountExists(account.username, account.email, account.phone_number)
 
-        session.add(account)
-        session.commit()
+    password = account.password
+    if password:
+        account.password = passwordHasher.hash(password)
 
-        return CustomResponse(message=accountCreated)
-    except Exception as _:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=errorModel)
+    session.add(account)
+    session.commit()
+
+    return CustomResponse(message=accountCreated)
     
 @app.get("/account/all")
 def get_all_accounts(session: SessionDep) -> list[Account]:

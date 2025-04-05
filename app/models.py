@@ -5,14 +5,17 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from helpers.messages import *
+
+class AccountType(str, Enum):
+    ADMIN = "ADMIN"
+    ENTREPRISE = "ENTREPRISE"
+    CANDIDATE = "CANDIDATE"
+
 class CustomResponse(BaseModel):
     message: str
     additional_data: Any | None = None
 
-class AccountType(str, Enum):
-    ADMIN = "ADMIN"
-    CANDIDATE = "CANDIDATE"
-    ENTREPRISE = "ENTREPRISE"
 
 class AccountBase(SQLModel, table=False):
     id: int = Field(primary_key=True, nullable=False)

@@ -20,6 +20,10 @@
 
 - Voir la documentation : ```https://fastapi.tiangolo.com```
 
+- SQLModel documentation : ```https://sqlmodel.tiangolo.com```
+
+- Model validators documentation : ```https://docs.pydantic.dev/latest/concepts/validators```
+
 - Installer les dépendances : ```pip install -r requirements.txt```
 
 - Lancer le projet : ```fastapi dev app/main.py```
