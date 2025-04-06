@@ -20,7 +20,7 @@ passwordHasher = PasswordHasher()
 
 def drop_create_db_and_tables():
     ###Drop all tables
-    SQLModel.metadata.drop_all(engine)
+    # SQLModel.metadata.drop_all(engine)
 
     ###Drop all tables
     SQLModel.metadata.create_all(engine)
@@ -44,13 +44,34 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-def checkIfAccountExists(username: str, email: str, phone_number: str):
+@app.get("/account/isUsernameExists/{username}")
+def is_username_exists(username: str, session: SessionDep) -> bool:
+        return get_account_by_identifier(value=username, session=session, raiseError=False) is not None
+
+@app.get("/account/isEmailExists/{email}")
+def is_email_exists(email: str, session: SessionDep) -> bool:
+        return get_account_by_identifier(value=email, session=session, raiseError=False) is not None
+
+@app.get("/account/isPhoneNumberExists/{phone_number}")
+def is_phone_number_exists(phone_number: str, session: SessionDep) -> bool:
+        return get_account_by_identifier(value=phone_number, session=session, raiseError=False) is not None
+        
+def checkIfAccountExists(username: str, email: str, phone_number: str, session: SessionDep):
     """
         Check if there is a account with this username or this email or this phone number
         
         If yes then raise an error else do nothing
     """
-    pass
+    status_code=status.HTTP_403_FORBIDDEN
+
+    if is_username_exists(username=username, session=session):
+        raise HTTPException(status_code=status_code, detail=accountExistsUsername)
+    
+    if is_email_exists(email=email, session=session):
+        raise HTTPException(status_code=status_code, detail=accountExistsEmail)
+    
+    if is_phone_number_exists(phone_number=phone_number, session=session):
+        raise HTTPException(status_code=status_code, detail=accountExistsPhoneNumber)
 
 @app.post("/account/create")
 def create_account(account: Account, session: SessionDep) -> CustomResponse:
@@ -59,7 +80,12 @@ def create_account(account: Account, session: SessionDep) -> CustomResponse:
     if account.account_type not in [AccountType.ADMIN, AccountType.ENTREPRISE, AccountType.CANDIDATE]:
         raise HTTPException(status_code=status_code, detail=accountTypeError)
     
-    checkIfAccountExists(account.username, account.email, account.phone_number)
+    checkIfAccountExists(
+        username=account.username,
+        email=account.email,
+        phone_number=account.phone_number,
+        session=session
+    )
 
     password = account.password
     if password:
@@ -78,16 +104,20 @@ def get_all_accounts(session: SessionDep) -> list[Account]:
     return results.all()
 
 @app.get("/account/byUsernameOrEmailOrPhone/{value}")
-def get_account_by_identifier(value: str, session: SessionDep, isLogin: bool = False) -> Account:
+def get_account_by_identifier(value: str, session: SessionDep, isLogin: bool = False, raiseError: bool = True) -> Account:
     statement = select(Account).where(or_(Account.username == value, Account.email == value, Account.phone_number == value))
 
     try:
         return session.exec(statement).one()
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND if not isLogin else status.HTTP_401_UNAUTHORIZED,
-            detail=accountNotFound if not isLogin else badCredentials
-        )
+
+        if raiseError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND if not isLogin else status.HTTP_401_UNAUTHORIZED,
+                detail=accountNotFound if not isLogin else badCredentials
+            )
+        
+        return None
     
 @app.post("/account/login")
 def login(usernameOrEmailOrPhone: Annotated[str, Form()], password: Annotated[str, Form()], session: SessionDep) -> Account:

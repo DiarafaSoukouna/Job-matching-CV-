@@ -1,3 +1,6 @@
+accountExistsPhoneNumber = "Ce numéro de téléphone est déjà associé à un autre compte !"
+accountExistsEmail = "Cet email est déjà associé à un autre compte !"
+accountExistsUsername = "Ce nom d'utilisateur est déjà associé à un autre compte !"
 accountTypeError = "La valeur du type de compte est incorrecte"
 accountCreated: str = "Compte créé avec succès !"
 accountNotFound: str = "Compte non trouvé !"
