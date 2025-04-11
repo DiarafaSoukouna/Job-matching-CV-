@@ -63,7 +63,7 @@ export default function JobCategories() {
   ]
 
   return (
-    <section className="bg-muted/50 py-12 md:py-16 lg:py-20 bg-gradient-to-r from-pink-100 via-pink-200 to-pink-300">
+    <section className="bg-muted/50 py-12 md:py-16 lg:py-20 bg-gradient-to-r from-teal-100 via-teal-200 to-teal-400">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="space-y-2">

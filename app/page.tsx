@@ -22,7 +22,7 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-r from-pink-100 via-pink-200 to-pink-300 py-20 md:py-24 lg:py-28">
+        <section className="relative overflow-hidden bg-gradient-to-r from-teal-100 via-teal-200 to-teal-400 py-20 md:py-24 lg:py-28">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container relative px-4 md:px-6">
           
@@ -52,8 +52,8 @@ export default function HomePage() {
                
               </div>
               <div className="relative">
-                <div className="absolute -left-4 -top-4 h-24 w-24 rounded-full bg-primary/20 blur-xl"></div>
-                <div className="absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-primary/10 blur-xl"></div>
+                <div className="absolute -left-4 -top-4 h-24 w-24 rounded-full "></div>
+                <div className="absolute -bottom-8 -right-8 h-40 w-40 rounded-full "></div>
                 <Card className="overflow-visible shadow-xl">
                   <CardContent className="p-6">
                     <Tabs defaultValue="jobs" className="w-full">
@@ -216,7 +216,7 @@ export default function HomePage() {
        
 
         {/* CTA Section */}
-        <section className="relative overflow-hidden bg-gradient-to-r from-pink-100 via-pink-200 to-pink-300 py-16 md:py-20 lg:py-24">
+        <section className="relative overflow-hidden bg-gradient-to-r from-teal-100 via-teal-200 to-teal-400 py-16 md:py-20 lg:py-24">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container relative flex flex-col items-center justify-center space-y-6 px-4 text-center md:px-6">
             <div className="space-y-3 md:space-y-4">
