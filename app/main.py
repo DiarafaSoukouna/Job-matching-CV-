@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status, Form
 
-from models import AccountType, Account, Admin, Candidate, Entreprise, CustomResponse
+from models import AccountType, Account, BusinessCategory, CustomResponse
 
 from typing import Annotated
 
@@ -20,9 +20,9 @@ passwordHasher = PasswordHasher()
 
 def drop_create_db_and_tables():
     ###Drop all tables
-    # SQLModel.metadata.drop_all(engine)
+    SQLModel.metadata.drop_all(engine)
 
-    ###Drop all tables
+    ###Create all tables
     SQLModel.metadata.create_all(engine)
 
 ###On startup/shutdow actions
@@ -104,7 +104,7 @@ def get_all_accounts(session: SessionDep) -> list[Account]:
     return results.all()
 
 @app.get("/account/byUsernameOrEmailOrPhone/{value}")
-def get_account_by_identifier(value: str, session: SessionDep, isLogin: bool = False, raiseError: bool = True) -> Account:
+def get_account_by_identifier(value: str, session: SessionDep, isLogin: bool = False, raiseError: bool = True) -> Account | None:
     statement = select(Account).where(or_(Account.username == value, Account.email == value, Account.phone_number == value))
 
     try:
@@ -129,6 +129,38 @@ def login(usernameOrEmailOrPhone: Annotated[str, Form()], password: Annotated[st
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=badCredentials)
 
     return account
+
+@app.get("/businessCategory/byName/{name}")
+def get_business_category_by_name(name: str, session: SessionDep, raiseError: bool = True) -> BusinessCategory | None:
+    statement = select(BusinessCategory).where(BusinessCategory.name == name)
+
+    try:
+        return session.exec(statement).one()
+    except Exception as e:
+        if raiseError:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=businessCategoryNotFound)
+        
+        return None
+
+@app.post("/businessCategory/create")
+def create_business_category(businessCategory: BusinessCategory, session: SessionDep) -> CustomResponse:
+
+    existingBusinessCategory = get_business_category_by_name(name=businessCategory.name, session=session, raiseError=False)
+
+    if existingBusinessCategory:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=businessCategoryExists)
+
+    session.add(businessCategory)
+    session.commit()
+    
+    return CustomResponse(message=businessCategoryCreated)
+
+@app.get("/businessCategory/all")
+def get_all_business_categories(session: SessionDep) -> list[BusinessCategory]:
+    statement = select(BusinessCategory)
+    results = session.exec(statement)
+
+    return results.all()
 
 @app.get("/")
 async def home():

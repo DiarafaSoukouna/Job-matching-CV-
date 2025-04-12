@@ -38,7 +38,14 @@ class AccountBase(SQLModel, table=False):
 
     create_date: ClassVar[datetime] = Field(nullable=False, default=datetime.now())
 
-
+class BusinessCategory(SQLModel, table=True):
+    __tablename__="business_category"
+    id: int = Field(primary_key=True, nullable=False)
+    name: str = Field(nullable=False, unique=True)
+    description: str | None = Field(default=None)
+    
+    accounts: list["Account"] | None = Relationship(back_populates="business_category")
+    
 class Account(AccountBase, table=True):
     __tablename__="account"
     password: str | None = Field(default=None, exclude=True)
@@ -46,9 +53,16 @@ class Account(AccountBase, table=True):
     nif: str | None = Field(default=None)
     rc: str | None = Field(default=None)
 
+    create_year: int | None = Field(default=None)
+    about: str | None = Field(default=None)
+    website: str | None = Field(default=None)
+
     jobs: list["Job"] | None = Relationship(back_populates="account")
 
     job_applications: list["JobApplication"] | None = Relationship(back_populates="account")
+
+    business_category_id: int | None = Field(default=None, foreign_key="business_category.id")
+    business_category: BusinessCategory | None = Relationship(back_populates="accounts")
 
 class Admin(AccountBase, table=False):
     pass
@@ -56,7 +70,13 @@ class Admin(AccountBase, table=False):
 class Entreprise(AccountBase, table=False):
     nif: str | None = None
     rc: str | None = None
+    create_year: int | None = None
+    about: str | None = None
+    website: str | None = None
+    
     jobs: list["Job"] | None = None
+    business_category_id: int | None = None
+    business_category: BusinessCategory | None = None
 
 class Candidate(AccountBase, table=False):
     cv_file_path: str | None = None
@@ -69,10 +89,17 @@ class JobCategory(SQLModel, table=True):
 
     jobs: list["Job"] = Relationship(back_populates="category")
 
+class JobContractType(str, Enum):
+    FULLTIME = "Full-Time"
+    REMOTE = "Remote"
+    PART_TIME = "Part-time"
+    INTERNSHIP = "Internship"
+
 class Job(SQLModel, table=True):
     __tablename__="job"
     id: int = Field(primary_key=True, nullable=False)
     title: str = Field(nullable=False)
+    contract_type: JobContractType = Field(nullable=False)
     description: str | None = Field(nullable=False)
 
     category_id: int | None = Field(default=None, foreign_key="job_category.id")
