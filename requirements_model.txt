@@ -1,0 +1,5 @@
+sentence-transformers
+transformers
+torch
+numpy==1.26.4
+PyPDF2
