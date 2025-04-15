@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, status, Form
+from fastapi import FastAPI, status, Form, UploadFile
 
+from helpers.cv_matcher import extract_named_entities, match_cv_to_job
 from models import AccountType, Account, BusinessCategory, CustomResponse
 
 from typing import Annotated
@@ -161,6 +162,22 @@ def get_all_business_categories(session: SessionDep) -> list[BusinessCategory]:
     results = session.exec(statement)
 
     return results.all()
+
+@app.post("/cv-match")
+def cv_match(cv_file: UploadFile, job_description: Annotated[str, Form()]):
+    try:
+        score = match_cv_to_job(cv_file.file, job_description)
+        return CustomResponse(message=f"Matching score: {score}%")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@app.post("/extract-keywords")
+def extract_keywords_from_text(text: Annotated[str, Form()]) -> CustomResponse:
+    try:
+        keywords = extract_named_entities(text)
+        return CustomResponse(message=f"Keywords extracted: {', '.join(keywords)}")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @app.get("/")
 async def home():

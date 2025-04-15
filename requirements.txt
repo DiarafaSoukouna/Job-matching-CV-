@@ -2,3 +2,9 @@ fastapi[standard]
 sqlmodel
 psycopg2
 pwdlib[argon2]
+
+sentence-transformers
+transformers
+torch
+numpy
+PyPDF2
