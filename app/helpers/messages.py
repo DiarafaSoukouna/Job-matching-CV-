@@ -1,3 +1,4 @@
+jobCreated: str = "Job créé avec succès !"
 jobCategoryCreated: str = "Catégorie de job créée avec succès !" 
 jobCategoryNotFound: str = "Catégorie de job non trouvée !"
 jobCategoryExists: str = "Cette catégorie de job existe déjà !"

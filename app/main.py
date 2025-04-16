@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, status, Form, UploadFile
 
 from helpers.cv_matcher import extract_named_entities, match_cv_to_job
-from models import AccountType, Account, BusinessCategory, CustomResponse, JobCategory
+from models import AccountType, Account, BusinessCategory, CustomResponse, Job, JobCategory
 
 from typing import Annotated
 
@@ -190,6 +190,20 @@ def create_job_category(jobCategory: JobCategory, session: SessionDep) -> Custom
 @app.get("/job/category/all")
 def get_all_job_categories(session: SessionDep) -> list[JobCategory]:
     statement = select(JobCategory)
+    results = session.exec(statement)
+
+    return results.all()
+
+@app.post("/job/create")
+def create_job(job: Job, session: SessionDep) -> CustomResponse:
+    session.add(job)
+    session.commit()
+    
+    return CustomResponse(message=jobCreated)
+
+@app.get("/job/all")
+def get_all_jobs(session: SessionDep) -> list[Job]:
+    statement = select(Job)
     results = session.exec(statement)
 
     return results.all()
