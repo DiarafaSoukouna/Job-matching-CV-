@@ -1,3 +1,6 @@
+jobCategoryCreated: str = "Catégorie de job créée avec succès !" 
+jobCategoryNotFound: str = "Catégorie de job non trouvée !"
+jobCategoryExists: str = "Cette catégorie de job existe déjà !"
 businessCategoryNotFound: str = "Catégorie de business non trouvée !"
 businessCategoryExists: str = "Cette catégorie de business existe déjà !"
 businessCategoryCreated: str = "Catégorie de business créée avec succès !"

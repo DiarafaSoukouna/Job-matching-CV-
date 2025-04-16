@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, status, Form, UploadFile
 
 from helpers.cv_matcher import extract_named_entities, match_cv_to_job
-from models import AccountType, Account, BusinessCategory, CustomResponse
+from models import AccountType, Account, BusinessCategory, CustomResponse, JobCategory
 
 from typing import Annotated
 
@@ -159,6 +159,37 @@ def create_business_category(businessCategory: BusinessCategory, session: Sessio
 @app.get("/businessCategory/all")
 def get_all_business_categories(session: SessionDep) -> list[BusinessCategory]:
     statement = select(BusinessCategory)
+    results = session.exec(statement)
+
+    return results.all()
+
+@app.get("/job/category/byName/{name}")
+def get_job_category_by_name(name: str, session: SessionDep, raiseError: bool = True) -> JobCategory | None:
+    statement = select(JobCategory).where(JobCategory.name == name)
+
+    try:
+        return session.exec(statement).one()
+    except Exception as e:
+        if raiseError:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=jobCategoryNotFound)
+        
+        return None
+
+@app.post("/job/category/create")
+def create_job_category(jobCategory: JobCategory, session: SessionDep) -> CustomResponse:
+    existingJobCategory = get_job_category_by_name(name=jobCategory.name, session=session, raiseError=False)
+
+    if existingJobCategory:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=jobCategoryExists)
+
+    session.add(jobCategory)
+    session.commit()
+    
+    return CustomResponse(message=jobCategoryCreated)
+
+@app.get("/job/category/all")
+def get_all_job_categories(session: SessionDep) -> list[JobCategory]:
+    statement = select(JobCategory)
     results = session.exec(statement)
 
     return results.all()
