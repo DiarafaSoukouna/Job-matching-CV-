@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, status, Form, UploadFile
 
 from helpers.cv_matcher import extract_named_entities, match_cv_to_job
-from models import AccountType, Account, BusinessCategory, CustomResponse, Job, JobCategory
+from models import AccountType, Account, BusinessCategory, CustomResponse, Job, JobApplication, JobCategory, JobContractType
 
 from typing import Annotated
 
@@ -21,7 +21,7 @@ passwordHasher = PasswordHasher()
 
 def drop_create_db_and_tables():
     ###Drop all tables
-    SQLModel.metadata.drop_all(engine)
+    # SQLModel.metadata.drop_all(engine)
 
     ###Create all tables
     SQLModel.metadata.create_all(engine)
@@ -196,6 +196,9 @@ def get_all_job_categories(session: SessionDep) -> list[JobCategory]:
 
 @app.post("/job/create")
 def create_job(job: Job, session: SessionDep) -> CustomResponse:
+    if job.contract_type not in [JobContractType.FULLTIME, JobContractType.REMOTE, JobContractType.PART_TIME, JobContractType.INTERNSHIP]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=invalidJobContractType)
+
     session.add(job)
     session.commit()
     
@@ -204,6 +207,20 @@ def create_job(job: Job, session: SessionDep) -> CustomResponse:
 @app.get("/job/all")
 def get_all_jobs(session: SessionDep) -> list[Job]:
     statement = select(Job)
+    results = session.exec(statement)
+
+    return results.all()
+
+@app.post("/job/application/create")
+def create_job_application(job_application: JobApplication, session: SessionDep) -> CustomResponse:
+    session.add(job_application)
+    session.commit()
+    
+    return CustomResponse(message=jobApplied)
+
+@app.get("/job/application/all")
+def get_all_job_applications(session: SessionDep) -> list[JobApplication]:
+    statement = select(JobApplication)
     results = session.exec(statement)
 
     return results.all()

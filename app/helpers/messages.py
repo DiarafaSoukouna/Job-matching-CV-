@@ -1,3 +1,5 @@
+invalidJobContractType: str = "Type de contrat invalide !"
+jobApplied: str = "Vous avez postulé avec succès !"
 jobCreated: str = "Job créé avec succès !"
 jobCategoryCreated: str = "Catégorie de job créée avec succès !" 
 jobCategoryNotFound: str = "Catégorie de job non trouvée !"
