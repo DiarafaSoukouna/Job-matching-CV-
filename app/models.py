@@ -22,9 +22,9 @@ class AccountBase(SQLModel, table=False):
 
     account_type: AccountType = Field(nullable=False)
 
-    enabled: bool = Field(nullable=False, default=False)
+    enabled: ClassVar[bool] = Field(nullable=False, default=True)
 
-    deleted: bool = Field(nullable=False, default=False)
+    deleted: ClassVar[bool] = Field(nullable=False, default=False)
 
     full_name: str = Field(index=True)
 
