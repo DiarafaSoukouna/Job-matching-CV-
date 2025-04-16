@@ -16,7 +16,7 @@ export default function FeaturedCompanies() {
             <p className="text-muted-foreground">Découvrez des opportunités auprès de ces entreprises leaders</p>
           </div>
           <Button asChild variant="outline">
-            <Link href="/companies">Voir toutes les entreprises</Link>
+            <Link href="/compagnies">Voir toutes les entreprises</Link>
           </Button>
         </div>
         <div className="mx-auto mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">

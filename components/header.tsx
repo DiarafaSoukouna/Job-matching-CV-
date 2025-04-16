@@ -17,10 +17,11 @@ import { Briefcase, Menu } from "lucide-react"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isConnected, setIsConnected] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className=" flex h-16 items-center justify-between p-4">
         <div className="flex items-center gap-2 md:gap-4">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -72,6 +73,7 @@ export default function Header() {
                 >
                   Sign up
                 </Link>
+                
               </div>
             </SheetContent>
           </Sheet>
@@ -147,7 +149,8 @@ export default function Header() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex items-center gap-2">
+        {!isConnected && 
+         <div className="flex items-center gap-2">
           <Link
             href="/login"
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
@@ -160,7 +163,14 @@ export default function Header() {
           <Button asChild size="sm" variant="outline" className="hidden sm:inline-flex">
             <Link href="/employers">For Employers</Link>
           </Button>
-        </div>
+          
+        </div>}
+       
+       {isConnected &&
+ <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600" >
+ <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+</div>
+       }
       </div>
     </header>
   )

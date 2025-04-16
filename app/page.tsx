@@ -71,7 +71,7 @@ export default function HomePage() {
                             <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input type="text" placeholder="Villes ou télétravail" className="pl-9" />
                           </div>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 gap-4">
                             <select className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ">
                               <option value="">Type d'emploi</option>
                               <option value="full-time">Temps plein</option>
@@ -79,13 +79,7 @@ export default function HomePage() {
                               <option value="contract">Contrat</option>
                               <option value="internship">Stage</option>
                             </select>
-                            <select className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                              <option value="">Niveau d'expérience</option>
-                              <option value="entry">Débutant</option>
-                              <option value="mid">Intermédiaire</option>
-                              <option value="senior">Senior</option>
-                              <option value="executive">Cadre supérieur</option>
-                            </select>
+                          
                           </div>
                           <Button className="w-full">
                             <Search className="mr-2 h-4 w-4" />
@@ -190,7 +184,7 @@ export default function HomePage() {
             </div>
             <div className="mt-8 flex justify-center">
               <Button asChild variant="outline" size="lg">
-                <Link href="/jobs">
+                <Link href="/jobs/all_jobs">
                   Voir toutes les offres d'emploi
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

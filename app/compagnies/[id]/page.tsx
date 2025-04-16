@@ -24,8 +24,8 @@ export default function CompanyPage({ params }: CompanyPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 pb-12">
       {/* Hero Section with Company Banner */}
-      <div className="relative h-64 w-full bg-muted">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/5"></div>
+      <div className="relative h-60 w-full bg-muted">
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-100 via-teal-200 to-teal-400"></div>
         <div className="container relative mx-auto flex h-full items-end px-4">
           <div className="mb-[-64px] flex items-end space-x-6">
             <div className="relative h-32 w-32 overflow-hidden rounded-xl border-4 border-background bg-background shadow-xl transition-transform duration-300 hover:scale-105">

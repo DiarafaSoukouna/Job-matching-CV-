@@ -2,7 +2,6 @@ import { JobListing } from './job';
 export interface CompagnyListing {
     id: string,
     name: string,
-    logo: string,
     slug: string,
     yearFounded: number,
     sector: string,
@@ -17,6 +16,7 @@ export interface CompagnyListing {
       linkedin: string,
       twitter: string,
     },
+    logo: string,
     jobCount : number,
     jobListings?: JobListing[]
 }
