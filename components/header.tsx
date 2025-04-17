@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,10 +14,28 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Briefcase, Menu } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
+
+  const router = useRouter()
+  
+  const deconnect = (): void => {
+    if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+      localStorage.removeItem("user");
+      setIsConnected(false);
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("user")){
+      setIsConnected(true)
+    }else {
+      setIsConnected(false)
+    }
+  })
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -167,9 +185,17 @@ export default function Header() {
         </div>}
        
        {isConnected &&
- <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600" >
- <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+       <div className="flex items-center gap-4">
+
+        <Button size="sm" className="hidden sm:inline-flex" onClick={() => deconnect}>
+      Deconnexion
+     </Button>
+     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 flex items-center justify-center p-6" onClick={() => router.push('/profil')}>
+ {/* <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg> */}
+ <h1>DS</h1>
 </div>
+</div>
+
        }
       </div>
     </header>

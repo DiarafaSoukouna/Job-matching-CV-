@@ -1,4 +1,6 @@
+"use client"
 import Link from "next/link"
+import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +19,20 @@ import HowItWorks from "@/components/how-it-works"
 import JobStats from "@/components/job-stats"
 
 export default function HomePage() {
+  const [nomOffre, setNomOffre] = useState("")
+  const [localisation, setLocalisation] = useState("")
+  const [secteur, setSecteur] = useState("")
+  const [data_all, setDataAll] = useState({})
+   
+  const onSubmit = async (e : any) => {
+    e.preventDefault()
+    setDataAll({
+      nom_offre: nomOffre,
+      localisation: localisation,
+      secteur: secteur,
+    })
+  }
+  
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -65,14 +81,14 @@ export default function HomePage() {
                         <div className="space-y-4">
                           <div className="relative">
                             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input type="search" placeholder="Nom de l'offre ou nom de l'entreprise" className="pl-9" />
+                            <Input type="search" name="nom_offre" onChange={(e) => setNomOffre(e.target.value)} placeholder="Nom de l'offre ou nom de l'entreprise" className="pl-9" />
                           </div>
                           <div className="relative">
                             <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input type="text" placeholder="Villes ou télétravail" className="pl-9" />
+                            <Input type="text" onChange={(e) => setLocalisation(e.target.value)} placeholder="Villes ou télétravail" className="pl-9" />
                           </div>
                           <div className="grid grid-cols-1 gap-4">
-                            <select className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ">
+                            <select onChange={(e) => setSecteur(e.target.value)} className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ">
                               <option value="">Type d'emploi</option>
                               <option value="full-time">Temps plein</option>
                               <option value="part-time">Temps partiel</option>
@@ -81,7 +97,7 @@ export default function HomePage() {
                             </select>
                           
                           </div>
-                          <Button className="w-full">
+                          <Button className="w-full" onClick={() => onSubmit}>
                             <Search className="mr-2 h-4 w-4" />
                             Rechercher des offres
                           </Button>

@@ -12,31 +12,36 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Image from "next/image"
+import {API_URL} from "@/api"
+import { useRouter } from "next/navigation"
+
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const router = useRouter()
 
   const login = async () => {
     if (!username || !password) {
       setError("Veuillez entrer à la fois l'email et le mot de passe")
       return
     }
-
+    const data = new FormData()
+    data.append("usernameOrEmailOrPhone", username)
+    data.append("password", password)
+ 
     try {
       setIsLoading(true)
       setError("")
 
-      const response = await axios.post("https://data.mrv-mali.org/api/auth/login", {
-        username,
-        password,
-      })
+      const response = await axios.post(`${API_URL}account/login`, data)
 
-      const token = response.data.token
-      console.log("Connexion réussie ! Token sauvegardé.", token)
-      // Here you would typically store the token and redirect
+      // const token = response.data
+      // console.log("Connexion réussie ! Token sauvegardé.", token)
+      localStorage.setItem("user", response.data)
+      router.push("/")
     } catch (error: any) {
       if (error.response && error.response.data) {
         console.log("Échec de connexion :", error.response.data.message)

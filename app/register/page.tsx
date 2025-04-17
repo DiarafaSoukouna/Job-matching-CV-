@@ -39,11 +39,13 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState("")
   const router = useRouter();
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordCom, setConfirmPasswordCom] = useState("");
+
 
   // User form state
   const [userData, setUserData] = useState({
     account_type: "CANDIDATE",
-    fullName: "",
+    full_name: "",
     email: "",
     password: "",
     username:"",
@@ -56,10 +58,10 @@ export default function RegisterPage() {
   // Company form state
   const [companyData, setCompanyData] = useState({
     account_type: "ENTREPRISE",
-    companyName: "",
+    full_name: "",
     email: "",
+    username: "",
     password: "",
-    confirmPassword: "",
     create_year: "",
     about: "",
     nif: "",
@@ -71,6 +73,7 @@ export default function RegisterPage() {
     employeeCount: "",
     business_category_id: "",
     logo: null as File | null,
+    
 
   })
 
@@ -102,8 +105,7 @@ export default function RegisterPage() {
   };
 
   const registerUser = async () => {
-
-    if (!userData.email || !userData.password || !userData.fullName) {
+    if (!userData.email || !userData.password || !userData.full_name) {
       setError("Veuillez remplir tous les champs obligatoires")
       return
     }
@@ -117,7 +119,7 @@ export default function RegisterPage() {
       setIsLoading(true)
       setError("")
 
-      const response = await axios.post(`${API_URL}account/create`, {
+      await axios.post(`${API_URL}account/create`, {
         ...userData,
         userType: "individual",
       })
@@ -138,12 +140,12 @@ export default function RegisterPage() {
   }
 
   const registerCompany = async () => {
-    if (!companyData.email || !companyData.password || !companyData.companyName) {
+    if (!companyData.email || !companyData.password || !companyData.full_name) {
       setError("Veuillez remplir tous les champs obligatoires")
       return
     }
 
-    if (companyData.password !== companyData.confirmPassword) {
+    if (companyData.password !== confirmPasswordCom) {
       setError("Les mots de passe ne correspondent pas")
       return
     }
@@ -152,20 +154,10 @@ export default function RegisterPage() {
       setIsLoading(true)
       setError("")
 
-      // Create FormData for file upload
-      const formData = new FormData()
-      Object.entries(companyData).forEach(([key, value]) => {
-        if (value !== null) {
-          formData.append(key, value as string | Blob)
-        }
-      })
-      formData.append("userType", "company")
+    
 
-      // Replace with your actual API endpoint
-      const response = await axios.post("https://data.mrv-mali.org/api/auth/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await axios.post(`${API_URL}account/create`, {
+        ...companyData
       })
 
       setSuccess("Inscription réussie ! Vous pouvez maintenant vous connecter.")
@@ -239,17 +231,17 @@ export default function RegisterPage() {
                   <CardContent className="space-y-4 p-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="fullName" className="flex items-center gap-1">
+                        <Label htmlFor="full_name" className="flex items-center gap-1">
                           <User className="h-3.5 w-3.5" />
                           <span>Nom complet*</span>
                         </Label>
                         <Input
-                          id="fullName"
-                          name="fullName"
+                          id="full_name"
+                          name="full_name"
                           required
                           placeholder="Jean Dupont"
                           className="border-input/60"
-                          value={userData.fullName}
+                          value={userData.full_name}
                           onChange={handleUserChange}
                         />
                       </div>
@@ -404,7 +396,7 @@ export default function RegisterPage() {
                           required
                           placeholder="Nom de votre entreprise"
                           className="border-input/60"
-                          value={companyData.companyName}
+                          value={companyData.full_name}
                           onChange={handleCompanyChange}
                         />
                       </div>
@@ -457,8 +449,8 @@ export default function RegisterPage() {
                           required
                           placeholder="••••••••"
                           className="border-input/60"
-                          value={companyData.confirmPassword}
-                          onChange={handleCompanyChange}
+                          value={confirmPasswordCom}
+                          onChange={(e) => setConfirmPasswordCom(e.target.value)}
                         />
                       </div>
                     </div>
@@ -492,11 +484,11 @@ export default function RegisterPage() {
                             <SelectValue placeholder="Sélectionnez votre secteur" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="tech">Technologie</SelectItem>
-                            <SelectItem value="finance">Finance</SelectItem>
-                            <SelectItem value="sante">Santé</SelectItem>
-                            <SelectItem value="education">Éducation</SelectItem>
-                            <SelectItem value="autre">Autre</SelectItem>
+                            <SelectItem value="0">Technologie</SelectItem>
+                            <SelectItem value="1">Finance</SelectItem>
+                            <SelectItem value="2">Santé</SelectItem>
+                            <SelectItem value="3">Éducation</SelectItem>
+                            <SelectItem value="4">Autre</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
