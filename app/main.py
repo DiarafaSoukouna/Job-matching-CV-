@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI, status, Form, UploadFile
 
 from helpers.cv_matcher import extract_named_entities, match_cv_to_job
-from models import AccountType, Account, BusinessCategory, CustomResponse, Job, JobApplication, JobCategory, JobContractType
+from models import AccountType, Account, BusinessCategory, Candidate, CustomResponse, Job, JobApplication, JobCategory, JobContractType
 
 from typing import Annotated
 
@@ -12,6 +13,8 @@ from sqlmodel import Session, SQLModel, create_engine, or_, select
 
 from helpers.messages import *
 from helpers.password_hasher import PasswordHasher
+
+from fastapi.responses import FileResponse
 
 database_url = "postgresql://test_db_user:kZvMBdDnQxLxOHSjtGztxEap2GHQ8tWJ@dpg-cviqgei4d50c73c4t2ag-a.virginia-postgres.render.com/test_db_tzs3"
 
@@ -240,6 +243,31 @@ def extract_keywords_from_text(text: Annotated[str, Form()]) -> CustomResponse:
         return CustomResponse(message=f"Keywords extracted: {', '.join(keywords)}")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@app.post("/upload-cv")
+def upload_cv(usernameOrEmailOrPhone: Annotated[str, Form()], cv_file: UploadFile, session: SessionDep):
+    candidate = get_account_by_identifier(value=usernameOrEmailOrPhone, session=session, isLogin=False)
+
+    uploads_dir = 'app/uploads/cvs'
+    os.makedirs(uploads_dir, exist_ok=True)
+
+    file_location = f"{uploads_dir}/{cv_file.filename}"
+
+    with open(file_location, "wb+") as file_object:
+        file_object.write(cv_file.file.read())
+
+    candidate.cv_file_path = file_location
+    session.add(candidate)
+    session.commit()
+    session.refresh(candidate)
+
+    return candidate
+
+@app.get("/read-cv/{usernameOrEmailOrPhone}")
+def read_cv(usernameOrEmailOrPhone: str, session: SessionDep) -> FileResponse:
+    candidate = get_account_by_identifier(value=usernameOrEmailOrPhone, session=session, isLogin=False)
+
+    return FileResponse(candidate.cv_file_path)
 
 @app.get("/")
 async def home():
