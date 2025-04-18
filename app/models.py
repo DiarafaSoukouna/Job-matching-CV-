@@ -50,9 +50,9 @@ class Account(AccountBase, table=True):
     __tablename__="account"
     password: str | None = Field(default=None, exclude=True)
     cv_file_path: str | None = Field(default=None)
+    profile_image_path: str | None = Field(default=None)
     nif: str | None = Field(default=None)
     rc: str | None = Field(default=None)
-
     create_year: int | None = Field(default=None)
     about: str | None = Field(default=None)
     website: str | None = Field(default=None)
@@ -68,6 +68,7 @@ class Admin(AccountBase, table=False):
     pass
 
 class Entreprise(AccountBase, table=False):
+    profile_image_path: str | None
     nif: str | None = None
     rc: str | None = None
     create_year: int | None = None
@@ -101,6 +102,7 @@ class Job(SQLModel, table=True):
     title: str = Field(nullable=False)
     contract_type: JobContractType = Field(nullable=False)
     description: str | None = Field(nullable=False)
+    skills: str | None = Field(default=None)
 
     category_id: int | None = Field(default=None, foreign_key="job_category.id")
     category: JobCategory | None = Relationship(back_populates="jobs")
