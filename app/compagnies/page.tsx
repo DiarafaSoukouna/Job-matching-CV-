@@ -22,20 +22,86 @@ import {
 } from "@/components/ui/sheet"
 import { companyListings } from "@/data/compagnies-listings"
 import type { CompagnyListing } from "@/types/company"
+import { useEffect } from "react"
+import axios from "axios"
+import { API_URL } from "@/api"
 
 // Données fictives pour les entreprises
-const entreprisesData = companyListings
+
 export default function EntreprisesPage() {
   const router = useRouter()
 
   // États pour la liste et les filtres
-  const [entreprises, setEntreprises] = useState<CompagnyListing[]>(entreprisesData)
+  const [entreprises, setEntreprises] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("name")
+  const [sortBy, setSortBy] = useState("full_name")
   const [secteur, setSecteur] = useState("")
   const [minEmployes, setMinEmployes] = useState("")
+  const [businessCategories, setBusinessCategories] = useState<any[]>([])
+  const Liste_Image = [
+    {
+      id:3,
+      image: "/orange.png",
+    },
+    {
+      id:4,
+      image: "/total.svg",
+    },
+    {
+      id:5,
+      image: "/bankofafrica.png",
+    },
+    {
+      id:7,
+      image: "/sotelma.webp",
+    },
+    {
+      id:8,
+      image: "/africab.jpeg",
+    }
+  ]
 
-  // Fonction pour trier les entreprises
+  const dataFetchBussiness = async () => {
+    try{
+      const response = await axios.get(`${API_URL}businessCategory/all`);
+      setBusinessCategories(response.data);
+
+    }
+    catch (error) {
+      console.error("Erreur lors de la récupération des catégories d'entreprises :", error)
+    }
+  }
+  const business = (id: any) => {
+    const found = businessCategories.find(element => element.id === id)
+    return found ? found.name : "Inconnu"
+  }
+  const fetchData = async () => {
+    try{
+      const response = await axios.get(`${API_URL}account/all`);
+      response.data.map((company : any) => {
+        const image = Liste_Image.find((img) => img.id === company.id) 
+        if (image) {
+          company.logo = image.image
+        } else {
+          company.logo = "/placeholder.svg"
+        }
+        return company
+      },)
+      const filteredCompanies = response.data.filter((company : any) => company.account_type === "ENTREPRISE")
+
+      console.log("response", filteredCompanies)
+
+      setEntreprises(filteredCompanies)
+    }
+    catch (error) {
+      console.error("Erreur lors de la récupération des entreprises :", error)
+    }
+  }
+useEffect(() => {
+  fetchData()
+  dataFetchBussiness()
+
+}, [])
   const handleSort = (value: string) => {
     setSortBy(value)
     const sortedEntreprises = [...entreprises]
@@ -44,12 +110,7 @@ export default function EntreprisesPage() {
       case "name":
         sortedEntreprises.sort((a, b) => a.name.localeCompare(b.name))
         break
-      case "employees":
-        sortedEntreprises.sort((a, b) => b.employees - a.employees)
-        break
-      case "yearFounded":
-        sortedEntreprises.sort((a, b) => b.yearFounded - a.yearFounded)
-        break
+     
       default:
         break
     }
@@ -61,51 +122,39 @@ export default function EntreprisesPage() {
   const resetFilters = () => {
     setSecteur("")
     setMinEmployes("")
-    setEntreprises(entreprisesData)
+    setEntreprises(entreprises)
   }
 
   // Fonction pour appliquer les filtres
-  const applyFilters = () => {
-    let filteredEntreprises = [...entreprisesData]
+  // const applyFilters = () => {
+  //   let filteredEntreprises = [...entreprises]
 
-    if (secteur) {
-      filteredEntreprises = filteredEntreprises.filter((e) => e.sector.toLowerCase() === secteur.toLowerCase())
-    }
+  //   if (secteur) {
+  //     filteredEntreprises = filteredEntreprises.filter((e) => e.sector.toLowerCase() === secteur.toLowerCase())
+  //   }
 
-    if (minEmployes) {
-      filteredEntreprises = filteredEntreprises.filter((e) => e.employees >= Number.parseInt(minEmployes))
-    }
+  //   if (minEmployes) {
+  //     filteredEntreprises = filteredEntreprises.filter((e) => e.employees >= Number.parseInt(minEmployes))
+  //   }
 
-    if (searchTerm) {
-      filteredEntreprises = filteredEntreprises.filter(
-        (e) =>
-          e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          e.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          e.address.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    }
+  //   if (searchTerm) {
+  //     filteredEntreprises = filteredEntreprises.filter(
+  //       (e) =>
+  //         e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         e.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         e.address.toLowerCase().includes(searchTerm.toLowerCase()),
+  //     )
+  //   }
 
-    setEntreprises(filteredEntreprises)
-  }
+  //   setEntreprises(filteredEntreprises)
+  // }
 
   // Fonction pour rechercher
-  const handleSearch = (term: string) => {
-    setSearchTerm(term)
-
-    if (!term) {
-      setEntreprises(entreprisesData)
-      return
-    }
-
-    const filteredEntreprises = entreprisesData.filter(
-      (e) =>
-        e.name.toLowerCase().includes(term.toLowerCase()) ||
-        e.sector.toLowerCase().includes(term.toLowerCase()) ||
-        e.address.toLowerCase().includes(term.toLowerCase()),
-    )
-
-    setEntreprises(filteredEntreprises)
-  }
+  const filteredEntreprises = entreprises.filter(
+    (e) =>
+      e.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.address.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   // Fonction pour rediriger vers la page de détails d'une entreprise
   const navigateToCompanyDetails = (entreprise: CompagnyListing) => {
@@ -127,7 +176,7 @@ export default function EntreprisesPage() {
               placeholder="Rechercher une entreprise..."
               className="pl-8"
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
@@ -152,12 +201,21 @@ export default function EntreprisesPage() {
                       <SelectValue placeholder="Tous les secteurs" />
                     </SelectTrigger>
                     <SelectContent>
+                      {businessCategories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                      {/* <SelectItem value="agriculture">Agriculture</SelectItem>
+
+                      }
                       <SelectItem value="technologie">Technologie</SelectItem>
-                      <SelectItem value="energie">Énergie</SelectItem>
+                      {/* <SelectItem value="energie">Énergie</SelectItem>
                       <SelectItem value="sante">Santé</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
                       <SelectItem value="construction">Construction</SelectItem>
-                      <SelectItem value="marketing">Marketing</SelectItem>
+                      <SelectItem value="marketing">Marketing</SelectItem> */}
+                      
                     </SelectContent>
                   </Select>
                 </div>
@@ -182,7 +240,7 @@ export default function EntreprisesPage() {
                   Réinitialiser
                 </Button>
                 <SheetClose asChild>
-                  <Button onClick={applyFilters}>Appliquer les filtres</Button>
+                  <Button>Appliquer les filtres</Button>
                 </SheetClose>
               </SheetFooter>
             </SheetContent>
@@ -207,7 +265,7 @@ export default function EntreprisesPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {entreprises.map((entreprise) => (
+            {filteredEntreprises.map((entreprise) => (
               <div
                 key={entreprise.id}
                 className="block transition-transform hover:scale-[1.02] cursor-pointer"
@@ -218,23 +276,24 @@ export default function EntreprisesPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         {entreprise.logo && (
-                          <div className="h-8 w-8 overflow-hidden rounded-full">
+                          <div className="h-12 w-12 overflow-hidden rounded-full">
                             <img
                               src={entreprise.logo || "/placeholder.svg"}
-                              alt={`${entreprise.name} logo`}
+                              alt={`${entreprise.full_name} logo`}
+                             
                               className="h-full w-full object-cover"
                             />
                           </div>
                         )}
-                        <h3 className="text-xl font-semibold">{entreprise.name}</h3>
+                        <h3 className="text-xl font-semibold">{entreprise.full_name}</h3>
                       </div>
-                      <Badge variant="outline">{entreprise.jobCount} offres</Badge>
+                      <Badge variant="outline">10 offres</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-start space-x-2">
                       <Building2 className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                      <span>{entreprise.sector}</span>
+                      <span>{business(entreprise.business_category_id)}</span>
                     </div>
                     <div className="flex items-start space-x-2">
                       <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
