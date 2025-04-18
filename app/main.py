@@ -232,7 +232,7 @@ def get_all_job_applications(session: SessionDep) -> list[JobApplication]:
 def cv_match(cv_file: UploadFile, job_description: Annotated[str, Form()]):
     try:
         score = match_cv_to_job(cv_file.file, job_description)
-        return CustomResponse(message=f"Matching score: {score}%")
+        return CustomResponse(message=f"Matching score: {score}%", additional_data={"score": score})
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
