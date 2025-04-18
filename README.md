@@ -34,6 +34,34 @@
 
     - http://127.0.0.1:8000/redoc
 
+- Mise à jour les migrations de la base de données :
+
+    - Voir les docs :
+
+        - ```https://medium.com/@sachinwuds/how-to-add-new-field-and-migrate-it-in-fastapi-c6575116b6f7```
+
+        - ```https://stackoverflow.com/questions/68932099/how-to-get-alembic-to-recognise-sqlmodel-database-model```
+
+        - ```https://alembic.sqlalchemy.org/en/latest/tutorial.html```
+
+    - ```pip install alembic```
+
+    - ```alembic init alembic```
+
+    - Modifier le fichier ```alembic.ini``` pour ajouter la base de données :
+
+        - ```sqlalchemy.url = sqlite:///./database.db```
+    
+    - Maintenant, mettez à jour le fichier ``env.py`` dans le dossier ``alembic`` pour inclure les métadonnées du modèle:
+
+        - ```from models import Job```
+
+        - ```target_metadata = Job.metadata```
+
+    - ```alembic revision --autogenerate -m "message"```
+
+    - ```alembic upgrade head```
+
 ## Déployer FastAPI sur Docker
 
 - Voir la documentation : ```https://fastapi.tiangolo.com/deployment/docker```
