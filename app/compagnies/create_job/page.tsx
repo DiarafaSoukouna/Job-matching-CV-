@@ -12,13 +12,16 @@ import { jobListings } from "@/data/job-listings"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { fetchCategories, addJobs} from "@/api"
+import { useRouter } from "next/navigation"
 
 export default function PostJob() {
+    const router = useRouter()
     const [categories, setCategories] = useState([])
     const [job, setJob] = useState('')
     const [category, setCategory] = useState('')
     const [contrat, setContrat] = useState('')
     const [description, setDescription] = useState('')
+
     const getContact = async () => {
         try {
             const response  = await fetchCategories()
@@ -56,7 +59,12 @@ export default function PostJob() {
       <Header />
       <main className="flex-1">
         <div className="container px-4 py-8 md:px-6 md:py-12">
-          
+          <div
+                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2 p-6"
+               onClick={()=> router.back()} >
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                Retour
+              </div>
           <div className="mx-auto max-w-3xl">
             <div className="mb-8 flex items-center space-x-4">
             

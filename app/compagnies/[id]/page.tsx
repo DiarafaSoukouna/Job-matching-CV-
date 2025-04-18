@@ -2,7 +2,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Building2, Calendar, Globe, Mail, MapPin, Phone, ArrowLeft } from "lucide-react"
+import { Building2, Calendar, Globe, Mail, MapPin, Phone, ArrowLeft , Plus} from "lucide-react"
 // import { companyListings } from "@/data/compagnies-listings"
 import type { JobListing } from "@/types/job"
 import { Badge } from "@/components/ui/badge"
@@ -27,6 +27,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
   const router = useRouter()
   const [businessCategories, setBusinessCategories] = useState<any[]>([])
   const [jobListings, setJobListings] = useState<any>({})
+  const [account, setAccount] = useState(false)
 
   if (!id) return <div className="container mx-auto p-8 text-center">Chargement...</div>
 
@@ -34,7 +35,7 @@ const getDataJob= async () => {
   try{
     const response = await axios.get(`${API_URL}job/all`);
     const filtered = response.data.filter((job: any) => job.account_id === Number(id));
-    setJobListings(response.data);
+    setJobListings(filtered);
   }
   catch (error) {
     console.error("Erreur lors de la récupération des offres d'emploi :", error)
@@ -101,6 +102,12 @@ useEffect(() => {
   fetchData()
   dataFetchBussiness()
   getDataJob()
+  const userJson = localStorage.getItem("user");
+     const ex = userJson ? JSON.parse(userJson) : null;
+     if (ex.id === Number(id)){
+       setAccount(true)
+
+     }
 }, [])
 
   const company = compagnies
@@ -162,10 +169,23 @@ useEffect(() => {
                   Site web
                 </Link>
               </Button>
-              <Button>
-                <Mail className="mr-2 h-4 w-4" />
-                Contacter
+              {account && (
+                <Button onClick={() => router.push(`./create_job`)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter une offre
               </Button>
+              )
+
+              }
+              {!account && (
+               <Button>
+               <Mail className="mr-2 h-4 w-4" />
+               Contacter
+             </Button>
+              )
+
+              }
+
             </div>
           </div>
         </div>
