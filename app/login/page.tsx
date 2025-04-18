@@ -40,7 +40,7 @@ export default function LoginPage() {
 
       // const token = response.data
       // console.log("Connexion réussie ! Token sauvegardé.", token)
-      localStorage.setItem("user", response.data)
+      localStorage.setItem("user", JSON.stringify(response.data));
       router.push("/")
     } catch (error: any) {
       if (error.response && error.response.data) {

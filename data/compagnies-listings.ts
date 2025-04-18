@@ -1,4 +1,7 @@
 import type { CompagnyListing } from "@/types/company";
+import {API_URL} from "@/api"
+import axios from "axios";
+
 
 export const companyListings: CompagnyListing[] = [
   {
@@ -231,3 +234,13 @@ export const companyListings: CompagnyListing[] = [
       },
     ]
 }]
+export const getDataCompagny = async () => {
+  try{
+    const response = await axios.get(`${API_URL}account/all`);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+}
